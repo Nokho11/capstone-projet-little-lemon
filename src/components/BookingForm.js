@@ -1,105 +1,140 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Importer useNavigate pour la redirection
+import React, { useState } from "react";
 
-const BookingForm = ({ availableTimes, updateTimes }) => {
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [guests, setGuests] = useState(1);
-  const [occasion, setOccasion] = useState('');
-  const [error, setError] = useState(null);  // Ajouter un état pour les erreurs
-  const navigate = useNavigate();  // Hook pour naviguer après soumission
+const BookingForm = ({ availableTimes, updateTimes, onSuccess }) => {
+  const [date, setDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+  const [nombreDePersonnes, setNombreDePersonnes] = useState(1); // Initialisé à 1
+  const [occasion, setOccasion] = useState("");
+  const [errors, setErrors] = useState({});
 
-  // Fonction pour gérer le changement de date
-  const handleDateChange = (event) => {
-    const newDate = event.target.value;
-    setSelectedDate(newDate);
-    updateTimes(newDate);  // Met à jour les heures disponibles en fonction de la date sélectionnée
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
   };
 
-  // Fonction pour soumettre le formulaire
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleDateChange = (e) => {
+    const newDate = e.target.value;
+    setDate(newDate);
+    updateTimes(newDate);
+    setErrors((prev) => ({ ...prev, date: "" }));
+  };
 
-    // Vérification de la présence de la date et de l'heure
-    if (!selectedDate || !selectedTime) {
-      setError('Veuillez choisir une date et une heure.');
+  const handleTimeChange = (e) => {
+    setSelectedTime(e.target.value);
+    setErrors((prev) => ({ ...prev, selectedTime: "" }));
+  };
+
+  const handleNombreDePersonnesChange = (e) => {
+    const value = Math.max(1, Math.min(20, Number(e.target.value))); // Toujours entre 1 et 20
+    setNombreDePersonnes(value);
+    setErrors((prev) => ({ ...prev, nombreDePersonnes: "" }));
+  };
+
+  const handleOccasionChange = (e) => {
+    setOccasion(e.target.value);
+    setErrors((prev) => ({ ...prev, occasion: "" }));
+  };
+
+  const resetForm = () => {
+    setDate("");
+    setSelectedTime("");
+    setNombreDePersonnes(1);
+    setOccasion("");
+  };
+
+  const validateForm = () => {
+    let valid = true;
+    let newErrors = {};
+
+    if (!date) {
+      newErrors.date = "Veuillez sélectionner une date.";
+      valid = false;
+    } else if (date < getTodayDate()) {
+      newErrors.date = "La date ne peut pas être dans le passé.";
+      valid = false;
+    }
+
+    if (!selectedTime) {
+      newErrors.selectedTime = "Veuillez sélectionner un horaire.";
+      valid = false;
+    }
+
+    if (nombreDePersonnes < 1 || nombreDePersonnes > 20) {
+      newErrors.nombreDePersonnes = "Le nombre de personnes doit être entre 1 et 20.";
+      valid = false;
+    }
+
+    if (!occasion.trim()) {
+      newErrors.occasion = "Veuillez renseigner une occasion.";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
       return;
     }
 
-    // Construire les données du formulaire
-    const formData = { selectedDate, selectedTime, guests, occasion };
+    console.log("Réservation effectuée :", { date, selectedTime, nombreDePersonnes, occasion });
 
-    try {
-      // Appeler l'API pour soumettre la réservation (simulé ici)
-      const response = await submitAPI(formData);  // Remplacer par votre fonction d'API réelle
-
-      // Si l'API renvoie un succès, rediriger vers la page de confirmation
-      if (response.success) {
-        navigate('/confirmation');  // Redirection vers la page de confirmation
-      } else {
-        setError('Une erreur est survenue lors de la réservation.');
-      }
-    } catch (error) {
-      setError('Une erreur est survenue avec l\'API.');
+    if (onSuccess) {
+      onSuccess();
     }
+
+    resetForm();
   };
 
   return (
-    <div className="booking-form-container">
-      <h2>Réservez votre table</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', maxWidth: '500px', gap: '20px' }}>
-        {/* Sélectionner une date */}
-        <label htmlFor="res-date">Choisissez une date</label>
-        <input
-          type="date"
-          id="res-date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          required
-        />
+    <form onSubmit={handleSubmit}>
+      <label>
+        Date :
+        <input type="date" value={date} onChange={handleDateChange} min={getTodayDate()} />
+      </label>
+      {errors.date && <p className="error-message">{errors.date}</p>}
 
-        {/* Sélectionner une heure */}
-        <label htmlFor="res-time">Choisissez une heure</label>
-        <select
-          id="res-time"
-          value={selectedTime}
-          onChange={(e) => setSelectedTime(e.target.value)}
-          required
-        >
-          <option value="" disabled>Choisissez une heure</option>
+      <label>
+        Horaire :
+        <select value={selectedTime} onChange={handleTimeChange}>
+          <option value="">Sélectionner un horaire</option>
           {availableTimes.map((time, index) => (
-            <option key={index} value={time}>{time}</option>
+            <option key={index} value={time}>
+              {time}
+            </option>
           ))}
         </select>
+      </label>
+      {errors.selectedTime && <p className="error-message">{errors.selectedTime}</p>}
 
-        {/* Nombre d'invités */}
-        <label htmlFor="guests">Nombre d'invités</label>
-        <input
-          type="number"
-          id="guests"
-          value={guests}
-          min="1"
+      <label>
+        Nombre de personnes :
+        <input 
+          type="number" 
+          value={nombreDePersonnes} 
+          onChange={handleNombreDePersonnesChange} 
+          min="1" 
           max="20"
-          onChange={(e) => setGuests(e.target.value)}
-          required
         />
+      </label>
+      {errors.nombreDePersonnes && <p className="error-message">{errors.nombreDePersonnes}</p>}
 
-        {/* Occasion (facultatif) */}
-        <label htmlFor="occasion">Occasion (ex : anniversaire)</label>
-        <input
-          type="text"
-          id="occasion"
-          value={occasion}
-          onChange={(e) => setOccasion(e.target.value)}
+      <label>
+        Occasion :
+        <input 
+          type="text" 
+          value={occasion} 
+          onChange={handleOccasionChange} 
+          placeholder="Ex : Anniversaire, dîner d'affaires..." 
         />
+      </label>
+      {errors.occasion && <p className="error-message">{errors.occasion}</p>}
 
-        {/* Affichage de l'erreur s'il y en a une */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-
-        {/* Bouton de soumission */}
-        <button type="submit">Réserver maintenant</button>
-      </form>
-    </div>
+      <button type="submit">Réserver</button>
+    </form>
   );
 };
 

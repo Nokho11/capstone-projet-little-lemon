@@ -1,122 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Utiliser useNavigate pour la navigation après la soumission
-
-// Fonction pour initialiser les horaires disponibles avec l'API
-const initializeTimes = async () => {
-  const today = new Date();
-  const dateStr = today.toISOString().split('T')[0];  // Format de la date YYYY-MM-DD
-  const availableTimes = await fetchAPI(dateStr);  // Récupère les horaires disponibles via l'API
-  return availableTimes;
-};
+import { fetchAPI, submitAPI } from '../api';
+import { useNavigate } from 'react-router-dom';
+import './BookingPage.css';
+import Main from '../Main';  // Importation du composant Main
 
 const BookingPage = () => {
-  // Utilisation de useState pour gérer les horaires disponibles, la date et l'heure sélectionnée
   const [availableTimes, setAvailableTimes] = useState([]);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');  // Ajouter l'état pour l'heure sélectionnée
-  const [error, setError] = useState(null);  // Gérer les erreurs d'API
-  const [isLoading, setIsLoading] = useState(false); // Ajouter un état pour savoir si on est en chargement
-  const navigate = useNavigate();  // Hook pour naviguer vers une page de confirmation
+  const [error, setError] = useState('');  // L'état pour gérer les erreurs
+  const navigate = useNavigate();
 
-  // Charger les horaires pour la date actuelle au premier rendu
   useEffect(() => {
     const fetchInitialTimes = async () => {
-      setIsLoading(true); // Démarrer le chargement
       try {
-        const times = await initializeTimes();  // Appel API pour obtenir les horaires
+        const today = new Date().toISOString().split('T')[0];
+        const times = await fetchAPI(today);
         setAvailableTimes(times);
-      } catch (err) {
-        setError('Impossible de récupérer les horaires disponibles.');
-      } finally {
-        setIsLoading(false); // Fin du chargement
+      } catch (error) {
+        console.error('Erreur lors de la récupération des horaires', error);
+        setError('Nous avons rencontré un problème pour récupérer les horaires, veuillez réessayer.');
       }
     };
-
     fetchInitialTimes();
-  }, []);  // Ce useEffect se déclenche uniquement au premier rendu
+  }, []);
 
-  // Fonction pour mettre à jour les horaires disponibles avec la date sélectionnée
   const updateTimes = async (newDate) => {
-    setIsLoading(true); // Démarrer le chargement
     try {
-      const times = await fetchAPI(newDate);  // Appel API pour obtenir les horaires en fonction de la nouvelle date
-      setAvailableTimes(times);  // Mettre à jour les horaires
-    } catch (err) {
-      setError('Impossible de récupérer les horaires pour cette date.');
-    } finally {
-      setIsLoading(false); // Fin du chargement
-    }
-  };
-
-  // Gérer le changement de la date sélectionnée
-  const handleDateChange = (event) => {
-    const date = event.target.value;
-    setSelectedDate(date);  // Met à jour la date sélectionnée
-    updateTimes(date);  // Met à jour les horaires disponibles en fonction de la date
-  };
-
-  // Gérer le changement de l'heure sélectionnée
-  const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);  // Met à jour l'heure sélectionnée
-  };
-
-  // Fonction pour soumettre la réservation
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Vérifier si la date et l'heure sont sélectionnées
-    if (!selectedDate || !selectedTime) {
-      setError('Veuillez sélectionner une date et une heure');
-      return;
-    }
-
-    try {
-      // Appel à l'API pour soumettre la réservation
-      const formData = { date: selectedDate, time: selectedTime };
-      const result = await submitAPI(formData);  // Appel API pour soumettre la réservation
-
-      if (result) {
-        // Si la réservation est réussie, naviguer vers la page de confirmation
-        navigate('/confirmation');
-      } else {
-        setError('Une erreur est survenue lors de la réservation. Essayez à nouveau.');
-      }
+      const times = await fetchAPI(newDate);
+      setAvailableTimes(times);
+      setError('');  // Réinitialiser l'erreur lors de la mise à jour
     } catch (error) {
-      setError('Une erreur est survenue avec l\'API.');
+      console.error('Erreur lors de la mise à jour des horaires', error);
+      setError('Nous avons rencontré un problème pour mettre à jour les horaires, veuillez réessayer.');
+    }
+  };
+
+  const submitForm = async (formData) => {
+    const success = await submitAPI(formData);
+    if (success) {
+      navigate('/confirmation');
+    } else {
+      setError('Erreur lors de la réservation. Veuillez réessayer.');
     }
   };
 
   return (
-    <div>
-      <h2>Réservez votre table</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Choisissez une date :
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
-        </label>
-
-        <label>
-          Choisissez une heure :
-          <select value={selectedTime} onChange={handleTimeChange}>
-            <option value="">Sélectionnez une heure</option>
-            {availableTimes.map((time, index) => (
-              <option key={index} value={time}>{time}</option>
-            ))}
-          </select>
-        </label>
-
-        {/* Afficher l'erreur s'il y en a une */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-
-        {/* Afficher un message de chargement pendant la récupération des horaires */}
-        {isLoading && <p>Chargement des horaires disponibles...</p>}
-
-        <button type="submit">Réserver maintenant</button>
-      </form>
+    <div className="booking-page">
+      <Main />  {/* Intégration de Main dans la page de réservation */}
+      
+      {error && <p className="error-message">{error}</p>}  {/* Affichage de l'erreur si elle existe */}
     </div>
   );
 };

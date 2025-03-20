@@ -1,0 +1,64 @@
+/* Couleurs Little Lemon */
+:root {
+    --yellow: #f4ce14;  /* Jaune */
+    --green: #495e57;   /* Vert */
+    --light-green: #ccd5ae; /* Vert clair */
+    --dark-yellow: #b28a00; /* Jaune foncé pour une meilleure lisibilité */
+    --white: #ffffff;
+  }
+  
+  /* Style général du menu */
+  .menu-container {
+    max-width: 800px;
+    margin: 40px auto;
+    text-align: center;
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  h1 {
+    color: var(--green);
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    color: #555;
+    font-size: 16px;
+  }
+  
+  /* Liste des plats */
+  .menu-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  /* Style des éléments du menu */
+  .menu-item {
+    background: var(--light-green);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    border-left: 8px solid var(--yellow);
+  }
+  
+  .menu-item:hover {
+    transform: translateY(-5px);
+  }
+  
+  h2 {
+    font-size: 20px;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  
+  .price {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--dark-yellow); /* Jaune foncé pour meilleure lisibilité */
+  }
+  

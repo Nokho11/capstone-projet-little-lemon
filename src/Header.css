@@ -1,0 +1,79 @@
+/* Header.css */
+
+.header {
+  background-color: #fff;  /* Fond blanc */
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* Centre horizontalement le contenu */
+  width: 100%;
+  max-width: 1100px;         /* Limite la largeur à 1200px */
+  margin: 0 auto;            /* Centrer horizontalement dans la page */
+  text-align: center;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;  /* Espace entre le logo et le menu */
+  align-items: center;            /* Centrer verticalement */
+  width: 100%;
+  max-width: 1200px;              /* Limite la largeur à 1200px */
+  padding: 0 20px;                /* Un petit padding pour ne pas coller le contenu aux bords */
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;    /* Aligner le logo et le titre verticalement */
+  justify-content: center; /* Centrer le logo et le titre horizontalement */
+}
+
+.logo {
+  max-width: 60px;   /* Ajuste la taille du logo */
+  height: auto;
+  margin-right: 10px;  /* Espace entre le logo et le titre */
+}
+
+h1 {
+  font-size: 2rem;
+  color: #4CAF50;  /* Texte en vert */
+  margin: 0;
+}
+
+/* Styles pour le menu de navigation */
+.nav {
+  display: flex;
+  justify-content: center;  /* Centrer horizontalement les éléments du menu */
+  width: 100%;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;  /* Espacement entre les liens */
+  list-style: none;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #4CAF50;  /* Texte des liens en vert */
+  font-size: 18px;
+  padding: 8px 16px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: #4CAF50;  /* Fond vert au survol */
+  color: white;               /* Texte blanc au survol */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;  /* Empiler les éléments verticalement */
+    align-items: center;     /* Centrer tout le contenu */
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

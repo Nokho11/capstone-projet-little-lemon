@@ -1,0 +1,89 @@
+/* Style général de la page de login */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  input[type="email"],
+  input[type="password"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box; /* Inclut la bordure et le padding dans la largeur totale */
+  }
+  
+  input[type="email"]:focus,
+  input[type="password"]:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+  
+  button {
+    padding: 10px;
+    background-color: #4a90e2;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: left;
+  }
+  
+  button:hover {
+    background-color: #357ab7;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+  }
+  
+  /* Style pour le champ mot de passe avec l'icône d'œil à droite */
+  .password-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px; /* Assure un espacement sous le champ */
+  }
+  
+  .password-field input {
+    width: 2500px; /* Assure que le champ prend toute la largeur */
+    padding-right: 40px; /* Espace réservé à l'icône */
+  }
+  
+  .password-field button {
+    margin-left: 5px; /* Espace entre l'input et l'icône */
+    font-size: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1; /* Assure que l'icône reste au-dessus du champ */
+  }
+  
